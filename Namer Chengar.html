@@ -1,0 +1,1024 @@
+<!DOCTYPE html>
+<html lang="bn">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>RenameAI Pro — স্মার্ট এআই SEO ফাইল রিনেম স্টুডিও</title>
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- JSZip লাইব্রেরি -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Hind+Siliguri:wght@400;500;600;700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Hind Siliguri', 'Inter', sans-serif;
+            background-color: #f8fafc;
+        }
+        .glass-header {
+            background: rgba(255, 255, 255, 0.92);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+        }
+        @keyframes pulse-border {
+            0%, 100% { border-color: #4f46e5; }
+            50% { border-color: #a5b4fc; }
+        }
+        .drag-active {
+            animation: pulse-border 1.5s infinite;
+            background-color: #eef2ff !important;
+        }
+        ::-webkit-scrollbar {
+            width: 6px;
+            height: 6px;
+        }
+        ::-webkit-scrollbar-track {
+            background: #f1f5f9;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #cbd5e1;
+            border-radius: 9999px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: #94a3b8;
+        }
+    </style>
+</head>
+<body class="text-slate-800 min-h-screen flex flex-col antialiased selection:bg-indigo-100 selection:text-indigo-700">
+
+    <!-- টোস্ট নোটিফিকেশন কন্টেইনার -->
+    <div id="toast-container" class="fixed bottom-5 right-5 z-50 flex flex-col gap-2.5 max-w-sm w-full pointer-events-none px-4 sm:px-0"></div>
+
+    <!-- প্রফেশনাল নেভিগেশন হেডার -->
+    <header class="glass-header border-b border-slate-200/80 sticky top-0 z-40">
+        <div class="max-w-6xl mx-auto px-3 sm:px-6 lg:px-8 h-16 flex items-center justify-between gap-2">
+            <div class="flex items-center gap-2 sm:gap-3 min-w-0">
+                <div class="w-9 h-9 sm:w-10 sm:h-10 rounded-xl bg-gradient-to-br from-indigo-600 to-violet-600 text-white flex items-center justify-center shadow-lg shadow-indigo-500/25 shrink-0">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.2">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M7 21h10a2 2 0 002-2V9.414a1 1 0 00-.293-.707l-5.414-5.414A1 1 0 0012.586 3H7a2 2 0 00-2 2v14a2 2 0 002 2z" />
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M9 13h6m-6 4h4" />
+                    </svg>
+                </div>
+                <div class="min-w-0">
+                    <div class="flex items-center gap-1.5">
+                        <span class="text-base sm:text-lg font-bold tracking-tight text-slate-900 truncate">RenameAI</span>
+                        <span class="px-1.5 py-0.5 text-[10px] font-bold uppercase tracking-wider bg-indigo-50 text-indigo-600 border border-indigo-200 rounded-full shrink-0">SEO Pro</span>
+                    </div>
+                    <p class="text-xs text-slate-500 hidden sm:block">Gemini AI চালিত ইনস্ট্যান্ট SEO ফাইল রিনেম স্টুডিও</p>
+                </div>
+            </div>
+
+            <div class="flex items-center gap-1.5 sm:gap-3 shrink-0">
+                <div id="header-api-badge" class="flex items-center gap-1.5 px-2.5 sm:px-3 py-1.5 rounded-full text-[11px] sm:text-xs font-bold bg-rose-50 text-rose-700 border border-rose-200 transition-all">
+                    <span id="api-dot" class="w-2 h-2 rounded-full bg-rose-500 shrink-0"></span>
+                    <span id="api-badge-text">Not Connected</span>
+                </div>
+                <button id="toggle-config-btn" type="button" class="flex items-center gap-1.5 px-2.5 sm:px-3.5 py-2 bg-slate-900 hover:bg-slate-800 text-white rounded-xl text-xs sm:text-sm font-medium transition shadow-sm cursor-pointer">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 text-indigo-400 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z" />
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+                    </svg>
+                    <span class="hidden sm:inline">সেটিংস</span>
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <!-- মেইন কন্টেন্ট এরিয়া -->
+    <main class="flex-grow max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-6 sm:py-8 w-full space-y-6">
+
+        <!-- কনফিগারেশন প্যানেল (API Key ও রিনেম স্টাইল) -->
+        <section id="config-panel" class="bg-white rounded-2xl border border-slate-200/90 shadow-sm overflow-hidden transition-all">
+            <div class="bg-slate-50/80 px-5 py-3 border-b border-slate-200/80 flex items-center justify-between">
+                <h2 class="text-sm font-bold text-slate-800 flex items-center gap-2">
+                    <span class="w-2 h-2 rounded-full bg-indigo-600"></span>
+                    Gemini API কনফিগারেশন ও SEO রিনেম মোড
+                </h2>
+                <a href="https://aistudio.google.com/app/apikey" target="_blank" rel="noopener noreferrer" class="text-xs font-semibold text-indigo-600 hover:text-indigo-700 flex items-center gap-1">
+                    ফ্রি API Key সংগ্রহ করুন
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-3.5 w-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
+                    </svg>
+                </a>
+            </div>
+
+            <div class="p-5 grid grid-cols-1 lg:grid-cols-12 gap-5">
+                <!-- API Key বক্স -->
+                <div class="lg:col-span-6 space-y-1.5">
+                    <label for="api-key-input" class="block text-xs font-semibold uppercase tracking-wider text-slate-500">
+                        Gemini API Key
+                    </label>
+                    <div class="flex gap-2">
+                        <div class="relative flex-grow">
+                            <input type="password" id="api-key-input" placeholder="AIzaSy... আপনার API Key পেস্ট করুন" autocomplete="off"
+                                class="w-full pl-3.5 pr-10 py-2.5 bg-slate-50 border border-slate-300 rounded-xl text-sm text-slate-800 focus:outline-none focus:ring-2 focus:ring-indigo-500/30 focus:border-indigo-500 transition">
+                            <button type="button" id="toggle-eye-btn" class="absolute right-2.5 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600 p-1 cursor-pointer" title="কী দেখুন বা লুকান">
+                                <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                                    <path stroke-linecap="round" stroke-linejoin="round" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+                                    <path stroke-linecap="round" stroke-linejoin="round" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
+                                </svg>
+                            </button>
+                        </div>
+                        <button type="button" id="verify-save-btn" class="px-5 py-2.5 bg-rose-600 hover:bg-rose-700 active:scale-[0.98] text-white text-sm font-bold rounded-xl shadow-sm transition shrink-0 cursor-pointer">
+                            Save & Connect
+                        </button>
+                    </div>
+                    <p id="api-feedback" class="text-xs text-slate-500 pt-0.5">
+                        কী দেওয়ার পর "Save & Connect" চাপুন, সফল হলে নীল রঙের Connected দেখাবে।
+                    </p>
+                </div>
+
+                <!-- রিনেম স্টাইল বক্স -->
+                <div class="lg:col-span-6 space-y-1.5">
+                    <label for="naming-style" class="block text-xs font-semibold uppercase tracking-wider text-slate-500">
+                        অটো-রিনেম SEO ফরম্যাট স্টাইল
+                    </label>
+                    <select id="naming-style" class="w-full px-3.5 py-2.5 bg-slate-50 border border-slate-300 rounded-xl text-sm text-slate-800 focus:outline-none focus:ring-2 focus:ring-indigo-500/30 focus:border-indigo-500 transition">
+                        <option value="seo-kebab" selected>🌟 প্রফেশনাল SEO ফ্রেন্ডলি (যেমন: green-cotton-fabric-swatch-samples)</option>
+                        <option value="smart-english">স্মার্ট আন্ডারস্কোর নাম (যেমন: annual_business_report_2026)</option>
+                        <option value="date-stamped">তারিখসহ SEO নাম (যেমন: 2026-11-19-modern-office-workspace)</option>
+                        <option value="bengali-clean">পরিষ্কার বাংলা নাম (যেমন: সবুজ_সুতি_কাপড়ের_নমুনা)</option>
+                        <option value="custom-rule">কাস্টম নির্দেশনা (নিজের মতো নিয়ম দিন)</option>
+                    </select>
+                    <input type="text" id="custom-rule-input" placeholder="উদাহরণ: নামের শুরুতে brand-name- দাও এবং SEO ফ্রেন্ডলি রাখো"
+                        class="hidden w-full px-3.5 py-2 mt-2 bg-indigo-50/40 border border-indigo-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500/30">
+                </div>
+            </div>
+        </section>
+
+        <!-- আপলোড ড্রপজোন কার্ড -->
+        <section>
+            <div id="drop-area" class="relative bg-white border-2 border-dashed border-indigo-300 hover:border-indigo-500 rounded-3xl p-8 sm:p-12 text-center transition-all cursor-pointer group shadow-sm hover:shadow-md">
+                <input type="file" id="file-picker" multiple class="absolute inset-0 w-full h-full opacity-0 cursor-pointer z-10">
+                
+                <div class="max-w-lg mx-auto flex flex-col items-center pointer-events-none">
+                    <div class="w-16 h-16 rounded-2xl bg-gradient-to-tr from-indigo-50 to-violet-100 border border-indigo-100 text-indigo-600 flex items-center justify-center mb-4 group-hover:scale-105 transition-transform shadow-sm">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.8">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12" />
+                        </svg>
+                    </div>
+                    <h3 class="text-xl sm:text-2xl font-bold text-slate-900 mb-1.5">ফাইল আপলোড করুন, সাথে সাথে SEO রিনেম হবে</h3>
+                    <p class="text-sm text-slate-500 mb-5 leading-relaxed">
+                        যেকোনো ফরম্যাটের ফাইল (JPG, PNG, WebP, PDF, DOCX, XLSX, MP4, MP3, ZIP) এখানে টেনে এনে ছেড়ে দিন অথবা ক্লিক করে নির্বাচন করুন।
+                    </p>
+                    <div class="inline-flex items-center gap-2 px-6 py-3 bg-indigo-600 group-hover:bg-indigo-700 text-white text-sm font-semibold rounded-xl shadow-lg shadow-indigo-600/20 transition">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.2">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M12 4v16m8-8H4" />
+                        </svg>
+                        <span>ফাইল সিলেক্ট করুন</span>
+                    </div>
+                    <div class="mt-4 flex flex-wrap items-center justify-center gap-2 text-[11px] font-medium text-slate-400">
+                        <span class="px-2.5 py-1 bg-slate-100 rounded-md">⚡ অটোমেটিক SEO রিনেম</span>
+                        <span class="px-2.5 py-1 bg-slate-100 rounded-md">👁️ স্মার্ট ভিশন এআই</span>
+                        <span class="px-2.5 py-1 bg-slate-100 rounded-md">📦 শেষে অটো ZIP ডাউনলোড</span>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- ফাইল প্রসেসিং ড্যাশবোর্ড ও লিস্ট -->
+        <section id="workspace-section" class="hidden space-y-4">
+            <!-- লাইভ লোডিং ও প্রগ্রেস কার্ড -->
+            <div id="live-loader-card" class="bg-white p-4 rounded-2xl border border-indigo-200 shadow-sm space-y-2.5">
+                <div class="flex items-center justify-between text-xs sm:text-sm font-semibold">
+                    <div class="flex items-center gap-2 text-indigo-700">
+                        <svg id="loader-spinner" class="animate-spin h-4 w-4 text-indigo-600" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                            <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                            <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                        </svg>
+                        <span id="loader-status-text">ফাইল লোড হচ্ছে এবং SEO রিনেম শুরু হয়েছে...</span>
+                    </div>
+                    <span id="loader-percent" class="text-indigo-600 font-bold">0%</span>
+                </div>
+                <div class="w-full bg-slate-100 rounded-full h-2.5 overflow-hidden">
+                    <div id="loader-progress-bar" class="bg-gradient-to-r from-indigo-600 to-emerald-500 h-2.5 rounded-full transition-all duration-300" style="width: 0%"></div>
+                </div>
+            </div>
+
+            <!-- স্ট্যাটাস ও বাল্ক অ্যাকশন বার -->
+            <div class="bg-white p-4 rounded-2xl border border-slate-200 shadow-sm flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+                <div class="flex flex-wrap items-center gap-3">
+                    <div class="flex items-center gap-2">
+                        <span class="text-sm font-bold text-slate-800">মোট ফাইল:</span>
+                        <span id="stat-total" class="px-2.5 py-0.5 text-xs font-bold bg-slate-100 text-slate-700 rounded-full">0</span>
+                    </div>
+                    <div class="flex items-center gap-2">
+                        <span class="text-sm font-bold text-emerald-700">রিনেম সম্পন্ন:</span>
+                        <span id="stat-done" class="px-2.5 py-0.5 text-xs font-bold bg-emerald-100 text-emerald-700 rounded-full">0</span>
+                    </div>
+                    <label class="inline-flex items-center gap-1.5 text-xs font-semibold text-slate-600 bg-slate-100 px-2.5 py-1 rounded-lg cursor-pointer select-none">
+                        <input type="checkbox" id="auto-zip-toggle" checked class="rounded text-indigo-600 focus:ring-indigo-500">
+                        <span>শেষ হলে অটো ZIP ডাউনলোড</span>
+                    </label>
+                </div>
+
+                <div class="flex flex-wrap items-center gap-2">
+                    <button type="button" id="retry-all-btn" class="px-3.5 py-2 text-xs sm:text-sm font-semibold text-indigo-700 bg-indigo-50 hover:bg-indigo-100 rounded-xl transition cursor-pointer">
+                        সব পুনরায় রিনেম
+                    </button>
+                    <button type="button" id="clear-list-btn" class="px-3.5 py-2 text-xs sm:text-sm font-semibold text-rose-600 bg-rose-50 hover:bg-rose-100 rounded-xl transition cursor-pointer">
+                        তালিকা মুছুন
+                    </button>
+                    <button type="button" id="download-all-zip-btn" disabled class="flex items-center gap-2 px-4 py-2 text-xs sm:text-sm font-semibold text-white bg-emerald-600 hover:bg-emerald-700 disabled:opacity-40 disabled:cursor-not-allowed rounded-xl shadow-sm transition cursor-pointer">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
+                        </svg>
+                        <span>সব ফাইল ZIP ডাউনলোড</span>
+                    </button>
+                </div>
+            </div>
+
+            <!-- ফাইল কার্ড লিস্ট -->
+            <div id="files-container" class="space-y-3"></div>
+        </section>
+
+    </main>
+
+    <!-- ফুটার -->
+    <footer class="bg-white border-t border-slate-200 py-5 mt-12">
+        <div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 flex flex-col sm:flex-row items-center justify-between gap-2 text-xs text-slate-500">
+            <p>© 2026 RenameAI SEO Pro — সম্পূর্ণ ব্রাউজার-ভিত্তিক নিরাপদ ফাইল রিনেম টুল।</p>
+            <p>সকল ফরম্যাট সাপোর্টেড • মূল ফাইলের এক্সটেনশন ও কোয়ালিটি অপরিবর্তিত থাকে</p>
+        </div>
+    </footer>
+
+    <script>
+        // ==========================================
+        // ১. গ্লোবাল স্টেট ও DOM রেফারেন্স
+        // ==========================================
+        let fileQueue = []; // { id, file, previewUrl, originalName, extension, newName, status, errorMsg }
+        let availableModelsCache = [];
+        let isApiConnected = false;
+
+        const apiKeyInput = document.getElementById('api-key-input');
+        const verifySaveBtn = document.getElementById('verify-save-btn');
+        const toggleEyeBtn = document.getElementById('toggle-eye-btn');
+        const toggleConfigBtn = document.getElementById('toggle-config-btn');
+        const configPanel = document.getElementById('config-panel');
+        const apiFeedback = document.getElementById('api-feedback');
+        const headerApiBadge = document.getElementById('header-api-badge');
+        const apiDot = document.getElementById('api-dot');
+        const apiBadgeText = document.getElementById('api-badge-text');
+
+        const namingStyleSelect = document.getElementById('naming-style');
+        const customRuleInput = document.getElementById('custom-rule-input');
+
+        const dropArea = document.getElementById('drop-area');
+        const filePicker = document.getElementById('file-picker');
+        const workspaceSection = document.getElementById('workspace-section');
+        const filesContainer = document.getElementById('files-container');
+
+        const loaderSpinner = document.getElementById('loader-spinner');
+        const loaderStatusText = document.getElementById('loader-status-text');
+        const loaderPercent = document.getElementById('loader-percent');
+        const loaderProgressBar = document.getElementById('loader-progress-bar');
+
+        const statTotal = document.getElementById('stat-total');
+        const statDone = document.getElementById('stat-done');
+        const autoZipToggle = document.getElementById('auto-zip-toggle');
+        const retryAllBtn = document.getElementById('retry-all-btn');
+        const clearListBtn = document.getElementById('clear-list-btn');
+        const downloadAllZipBtn = document.getElementById('download-all-zip-btn');
+        const toastContainer = document.getElementById('toast-container');
+
+        // ==========================================
+        // ২. টোস্ট নোটিফিকেশন ও UI স্ট্যাটাস হেল্পার
+        // ==========================================
+        function showToast(message, type = 'info') {
+            const colors = {
+                success: 'bg-emerald-600 text-white border-emerald-500',
+                error: 'bg-rose-600 text-white border-rose-500',
+                info: 'bg-slate-800 text-white border-slate-700'
+            };
+            const toast = document.createElement('div');
+            toast.className = `pointer-events-auto px-4 py-3 rounded-xl shadow-lg border text-xs sm:text-sm font-medium transition-all duration-300 transform translate-y-2 opacity-0 ${colors[type] || colors.info}`;
+            toast.textContent = message;
+            toastContainer.appendChild(toast);
+
+            requestAnimationFrame(() => {
+                toast.classList.remove('translate-y-2', 'opacity-0');
+            });
+
+            setTimeout(() => {
+                toast.classList.add('opacity-0', 'translate-y-2');
+                setTimeout(() => toast.remove(), 300);
+            }, 3500);
+        }
+
+        function setApiUiStatus(state, message) {
+            apiFeedback.textContent = message;
+            if (state === 'connected') {
+                isApiConnected = true;
+                apiFeedback.className = 'text-xs font-bold text-blue-600 pt-0.5';
+                headerApiBadge.className = 'flex items-center gap-1.5 px-2.5 sm:px-3 py-1.5 rounded-full text-[11px] sm:text-xs font-bold bg-blue-50 text-blue-700 border border-blue-200 transition-all';
+                apiDot.className = 'w-2 h-2 rounded-full bg-blue-600 animate-pulse shrink-0';
+                apiBadgeText.textContent = 'Connected';
+                verifySaveBtn.textContent = 'Connected ✓';
+                verifySaveBtn.className = 'px-5 py-2.5 bg-blue-600 hover:bg-blue-700 text-white text-sm font-bold rounded-xl shadow-sm transition shrink-0 cursor-pointer';
+            } else if (state === 'checking') {
+                isApiConnected = false;
+                apiFeedback.className = 'text-xs font-medium text-amber-600 pt-0.5';
+                headerApiBadge.className = 'flex items-center gap-1.5 px-2.5 sm:px-3 py-1.5 rounded-full text-[11px] sm:text-xs font-semibold bg-amber-50 text-amber-700 border border-amber-200';
+                apiDot.className = 'w-2 h-2 rounded-full bg-amber-500 animate-ping shrink-0';
+                apiBadgeText.textContent = 'Connecting...';
+                verifySaveBtn.textContent = 'Connecting...';
+                verifySaveBtn.className = 'px-5 py-2.5 bg-amber-500 text-white text-sm font-bold rounded-xl shadow-sm transition shrink-0 cursor-wait';
+            } else if (state === 'invalid') {
+                isApiConnected = false;
+                apiFeedback.className = 'text-xs font-semibold text-rose-600 pt-0.5';
+                headerApiBadge.className = 'flex items-center gap-1.5 px-2.5 sm:px-3 py-1.5 rounded-full text-[11px] sm:text-xs font-bold bg-rose-50 text-rose-700 border border-rose-200';
+                apiDot.className = 'w-2 h-2 rounded-full bg-rose-600 shrink-0';
+                apiBadgeText.textContent = 'Not Connected';
+                verifySaveBtn.textContent = 'Save & Connect';
+                verifySaveBtn.className = 'px-5 py-2.5 bg-rose-600 hover:bg-rose-700 text-white text-sm font-bold rounded-xl shadow-sm transition shrink-0 cursor-pointer';
+            } else {
+                isApiConnected = false;
+                apiFeedback.className = 'text-xs text-slate-500 pt-0.5';
+                headerApiBadge.className = 'flex items-center gap-1.5 px-2.5 sm:px-3 py-1.5 rounded-full text-[11px] sm:text-xs font-bold bg-rose-50 text-rose-700 border border-rose-200';
+                apiDot.className = 'w-2 h-2 rounded-full bg-rose-500 shrink-0';
+                apiBadgeText.textContent = 'Not Connected';
+                verifySaveBtn.textContent = 'Save & Connect';
+                verifySaveBtn.className = 'px-5 py-2.5 bg-rose-600 hover:bg-rose-700 text-white text-sm font-bold rounded-xl shadow-sm transition shrink-0 cursor-pointer';
+            }
+        }
+
+        // ==========================================
+        // ৩. ইভেন্ট লিসেনার ও API Key কানেকশন
+        // ==========================================
+        window.addEventListener('DOMContentLoaded', async () => {
+            const savedKey = localStorage.getItem('gemini_pro_renamer_key');
+            if (savedKey) {
+                apiKeyInput.value = savedKey;
+                await connectApiKey(savedKey, true);
+            }
+        });
+
+        apiKeyInput.addEventListener('input', () => {
+            availableModelsCache = [];
+            if (isApiConnected) {
+                setApiUiStatus('idle', 'নতুন API Key সেভ করতে "Save & Connect" চাপুন।');
+            }
+        });
+
+        toggleEyeBtn.addEventListener('click', () => {
+            apiKeyInput.type = apiKeyInput.type === 'password' ? 'text' : 'password';
+        });
+
+        toggleConfigBtn.addEventListener('click', () => {
+            configPanel.classList.toggle('hidden');
+        });
+
+        namingStyleSelect.addEventListener('change', () => {
+            if (namingStyleSelect.value === 'custom-rule') {
+                customRuleInput.classList.remove('hidden');
+                customRuleInput.focus();
+            } else {
+                customRuleInput.classList.add('hidden');
+            }
+        });
+
+        async function connectApiKey(rawKey, silent = false) {
+            const key = (rawKey || '').trim().replace(/['"\s]/g, '');
+            apiKeyInput.value = key;
+
+            if (!key) {
+                localStorage.removeItem('gemini_pro_renamer_key');
+                availableModelsCache = [];
+                setApiUiStatus('idle', 'API Key মুছে ফেলা হয়েছে।');
+                if (!silent) showToast('API Key মুছে ফেলা হয়েছে।', 'info');
+                return false;
+            }
+
+            localStorage.setItem('gemini_pro_renamer_key', key);
+            availableModelsCache = [];
+            verifySaveBtn.disabled = true;
+            setApiUiStatus('checking', 'Google Gemini সার্ভারের সাথে কানেক্ট হচ্ছে...');
+
+            try {
+                const reply = await queryGeminiModels(key, {
+                    contents: [{ parts: [{ text: 'Reply with OK' }] }]
+                });
+                if (reply) {
+                    const activeName = availableModelsCache[0] || 'Gemini Flash';
+                    setApiUiStatus('connected', `Connected! সক্রিয় মডেল: ${activeName}`);
+                    if (!silent) showToast('Connected! API Key সফলভাবে যুক্ত হয়েছে।', 'success');
+                    return true;
+                }
+            } catch (error) {
+                setApiUiStatus('invalid', error.message);
+                if (!silent) showToast(error.message, 'error');
+            } finally {
+                verifySaveBtn.disabled = false;
+            }
+            return false;
+        }
+
+        verifySaveBtn.addEventListener('click', async () => {
+            await connectApiKey(apiKeyInput.value, false);
+        });
+
+        // ==========================================
+        // ৪. Gemini API কল (অটো মডেল ডিসকভারি ও স্মার্ট ফলব্যাক)
+        // ==========================================
+        async function detectAvailableModels(apiKey) {
+            if (availableModelsCache.length > 0) return availableModelsCache;
+
+            const defaultList = [
+                'gemini-2.0-flash',
+                'gemini-2.5-flash',
+                'gemini-2.0-flash-lite',
+                'gemini-1.5-flash',
+                'gemini-1.5-flash-8b',
+                'gemini-3-flash-preview'
+            ];
+
+            if (!apiKey) return defaultList;
+
+            try {
+                const listUrl = `https://generativelanguage.googleapis.com/v1beta/models?key=${encodeURIComponent(apiKey)}`;
+                const res = await fetch(listUrl);
+                if (!res.ok) {
+                    availableModelsCache = defaultList;
+                    return defaultList;
+                }
+
+                const data = await res.json();
+                if (Array.isArray(data.models)) {
+                    const validModels = data.models
+                        .filter(m => Array.isArray(m.supportedGenerationMethods) && m.supportedGenerationMethods.includes('generateContent'))
+                        .map(m => m.name.replace(/^models\//, ''))
+                        .filter(name => name.includes('gemini') && !name.includes('embedding') && !name.includes('imagen') && !name.includes('veo') && !name.includes('tts') && !name.includes('robotics'));
+
+                    validModels.sort((a, b) => {
+                        const score = (n) => {
+                            if (n === 'gemini-2.0-flash') return 1;
+                            if (n === 'gemini-2.5-flash') return 2;
+                            if (n === 'gemini-2.0-flash-lite') return 3;
+                            if (n === 'gemini-1.5-flash') return 4;
+                            if (n.includes('flash')) return 5;
+                            return 6;
+                        };
+                        return score(a) - score(b);
+                    });
+
+                    if (validModels.length > 0) {
+                        availableModelsCache = [...new Set([...validModels, ...defaultList])];
+                        return availableModelsCache;
+                    }
+                }
+            } catch (e) {
+                // নেটওয়ার্ক সমস্যায় ডিফল্ট লিস্ট ব্যবহার করবে
+            }
+            availableModelsCache = defaultList;
+            return defaultList;
+        }
+
+        async function fetchWithBackoff(url, options, retries = 2) {
+            for (let i = 0; i <= retries; i++) {
+                try {
+                    const res = await fetch(url, options);
+                    if ((res.status === 429 || res.status === 503 || res.status === 500) && i < retries) {
+                        await new Promise(r => setTimeout(r, 1200 * (i + 1)));
+                        continue;
+                    }
+                    return res;
+                } catch (err) {
+                    if (i === retries) throw err;
+                    await new Promise(r => setTimeout(r, 1000 * (i + 1)));
+                }
+            }
+        }
+
+        async function queryGeminiModels(apiKey, payload) {
+            const cleanKey = (apiKey || '').trim().replace(/['"\s]/g, '');
+            const modelsToTry = await detectAvailableModels(cleanKey);
+
+            let lastErrorMessage = 'API থেকে কোনো উত্তর পাওয়া যায়নি।';
+
+            for (let idx = 0; idx < modelsToTry.length; idx++) {
+                const modelName = modelsToTry[idx];
+                const endpoint = `https://generativelanguage.googleapis.com/v1beta/models/${modelName}:generateContent?key=${encodeURIComponent(cleanKey)}`;
+                try {
+                    const response = await fetchWithBackoff(endpoint, {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify(payload)
+                    }, 1);
+
+                    const result = await response.json();
+
+                    if (response.ok) {
+                        const parts = result?.candidates?.[0]?.content?.parts || [];
+                        const textPart = parts.find(p => typeof p.text === 'string' && p.text.trim().length > 0);
+                        if (textPart) {
+                            availableModelsCache = [modelName, ...modelsToTry.filter(m => m !== modelName)];
+                            return textPart.text;
+                        }
+                        if (result?.candidates?.length > 0) {
+                            return 'OK';
+                        }
+                    } else {
+                        const rawMsg = result?.error?.message || `HTTP ${response.status}`;
+                        const lowerMsg = rawMsg.toLowerCase();
+
+                        if (lowerMsg.includes('api key not valid') || lowerMsg.includes('api_key_invalid')) {
+                            throw new Error('আপনার দেওয়া Gemini API Key-টি সঠিক নয়। Google AI Studio থেকে সঠিক Key কপি করে দিন।');
+                        }
+                        if (lowerMsg.includes('referer') || lowerMsg.includes('blocked') || response.status === 403) {
+                            throw new Error('আপনার API Key-তে Website Restriction দেওয়া আছে। Google Cloud/AI Studio থেকে Restriction তুলে দিন।');
+                        }
+                        lastErrorMessage = rawMsg;
+                    }
+                } catch (err) {
+                    if (err.message.includes('সঠিক নয়') || err.message.includes('Restriction')) {
+                        throw err;
+                    }
+                    lastErrorMessage = err.message || 'নেটওয়ার্ক সংযোগে সমস্যা হচ্ছে।';
+                }
+            }
+
+            throw new Error(lastErrorMessage);
+        }
+
+        // ==========================================
+        // ৫. ফাইল আপলোড, SEO প্রম্পট ও রিনেম লজিক
+        // ==========================================
+        ['dragenter', 'dragover'].forEach(evtName => {
+            dropArea.addEventListener(evtName, (e) => {
+                e.preventDefault();
+                e.stopPropagation();
+                dropArea.classList.add('drag-active');
+            });
+        });
+
+        ['dragleave', 'drop'].forEach(evtName => {
+            dropArea.addEventListener(evtName, (e) => {
+                e.preventDefault();
+                e.stopPropagation();
+                dropArea.classList.remove('drag-active');
+            });
+        });
+
+        dropArea.addEventListener('drop', (e) => {
+            if (e.dataTransfer?.files?.length) {
+                ingestFiles(e.dataTransfer.files);
+            }
+        });
+
+        filePicker.addEventListener('change', (e) => {
+            if (e.target.files?.length) {
+                ingestFiles(e.target.files);
+                filePicker.value = '';
+            }
+        });
+
+        function splitFileName(fullName) {
+            const lastDot = fullName.lastIndexOf('.');
+            if (lastDot <= 0) return { base: fullName, ext: '' };
+            return {
+                base: fullName.substring(0, lastDot),
+                ext: fullName.substring(lastDot)
+            };
+        }
+
+        function getPromptInstruction(originalName, mimeType) {
+            const style = namingStyleSelect.value;
+            const today = new Date().toISOString().slice(0, 10);
+
+            let styleRule = '';
+            if (style === 'seo-kebab') {
+                styleRule = 'Generate a rich, descriptive, Google SEO-friendly slug in lowercase English using hyphens (-) between words (3 to 7 meaningful keywords describing the exact subject, color, object, or topic, e.g., green-cotton-fabric-swatch-samples or modern-minimalist-office-desk). Avoid generic words like image, photo, file, untitled, or random numbers.';
+            } else if (style === 'smart-english') {
+                styleRule = 'Generate a clean, descriptive, SEO-friendly English file name in lowercase using underscores (_) between words (3 to 6 descriptive keywords, e.g., green_cotton_fabric_samples). Avoid random numbers.';
+            } else if (style === 'date-stamped') {
+                styleRule = `Start with "${today}-" followed by a clean, descriptive SEO-friendly lowercase English slug using hyphens (-) (e.g., ${today}-quarterly-financial-report).`;
+            } else if (style === 'bengali-clean') {
+                styleRule = 'ফাইলের বিষয়বস্তু বা ধরন অনুযায়ী সুন্দর, অর্থবহ ও পরিষ্কার বাংলা নাম তৈরি করো এবং শব্দের মাঝে আন্ডারস্কোর (_) দাও (যেমন: সবুজ_সুতি_কাপড়ের_নমুনা)।';
+            } else if (style === 'custom-rule') {
+                const userRule = customRuleInput.value.trim() || 'Generate a clean SEO-friendly English hyphenated filename.';
+                styleRule = `Follow this exact custom user rule: "${userRule}".`;
+            }
+
+            return `You are an expert SEO Digital Asset Manager. Analyze the provided file content (if image/document) and its original filename ("${originalName}", type: "${mimeType || 'unknown'}").
+${styleRule}
+STRICT OUTPUT RULES:
+- Return ONLY the new filename WITHOUT any file extension (do not include .jpg, .png, .pdf, etc.).
+- Do NOT include quotes, markdown, explanations, or extra text.
+- Make sure the name is unique, accurate, descriptive, and well-structured for SEO.`;
+        }
+
+        function sanitizeBaseName(rawText, fallbackBase) {
+            const style = namingStyleSelect.value;
+            const separator = (style === 'seo-kebab' || style === 'date-stamped') ? '-' : '_';
+
+            let cleaned = (rawText || '')
+                .replace(/[`"'\n\r]/g, '')
+                .trim();
+
+            cleaned = cleaned.replace(/\.(jpg|jpeg|png|webp|gif|svg|pdf|docx?|xlsx?|pptx?|txt|csv|mp4|mp3|wav|zip|rar)$/i, '');
+            cleaned = cleaned.replace(/[\\/:*?"<>|]/g, separator).replace(/[\s_-]+/g, separator);
+            cleaned = cleaned.replace(/^[-_]+|[-_]+$/g, '');
+
+            if (style === 'seo-kebab' || style === 'date-stamped') {
+                cleaned = cleaned.toLowerCase();
+            }
+
+            return cleaned.length >= 2 ? cleaned.substring(0, 85) : `${fallbackBase}${separator}seo`;
+        }
+
+        function ensureUniqueFileName(desiredBase, ext, currentId) {
+            let candidate = `${desiredBase}${ext}`;
+            let counter = 2;
+            const separator = (namingStyleSelect.value === 'seo-kebab' || namingStyleSelect.value === 'date-stamped') ? '-' : '_';
+            while (fileQueue.some(f => f.id !== currentId && f.newName && f.newName.toLowerCase() === candidate.toLowerCase())) {
+                candidate = `${desiredBase}${separator}${counter}${ext}`;
+                counter++;
+            }
+            return candidate;
+        }
+
+        function fileToBase64(file) {
+            return new Promise((resolve, reject) => {
+                const reader = new FileReader();
+                reader.onload = () => {
+                    const result = reader.result || '';
+                    resolve(result.split(',')[1]);
+                };
+                reader.onerror = reject;
+                reader.readAsDataURL(file);
+            });
+        }
+
+        function createOptimizedImageBase64(file, maxDim = 512) {
+            return new Promise((resolve) => {
+                const img = new Image();
+                const objUrl = URL.createObjectURL(file);
+                img.onload = () => {
+                    URL.revokeObjectURL(objUrl);
+                    let { width, height } = img;
+                    if (width > maxDim || height > maxDim) {
+                        if (width > height) {
+                            height = Math.round((height * maxDim) / width);
+                            width = maxDim;
+                        } else {
+                            width = Math.round((width * maxDim) / height);
+                            height = maxDim;
+                        }
+                    }
+                    const canvas = document.createElement('canvas');
+                    canvas.width = width;
+                    canvas.height = height;
+                    const ctx = canvas.getContext('2d');
+                    ctx.drawImage(img, 0, 0, width, height);
+                    const dataUrl = canvas.toDataURL('image/jpeg', 0.78);
+                    resolve({
+                        mimeType: 'image/jpeg',
+                        data: dataUrl.split(',')[1]
+                    });
+                };
+                img.onerror = async () => {
+                    URL.revokeObjectURL(objUrl);
+                    const fallback = await fileToBase64(file);
+                    resolve({ mimeType: file.type || 'image/png', data: fallback });
+                };
+                img.src = objUrl;
+            });
+        }
+
+        async function ingestFiles(fileList) {
+            const filesArray = Array.from(fileList);
+            if (filesArray.length === 0) return;
+
+            const apiKey = (apiKeyInput.value || localStorage.getItem('gemini_pro_renamer_key') || '').trim();
+            if (!apiKey) {
+                showToast('প্রথমে উপরে আপনার Gemini API Key দিয়ে "Save & Connect" করুন!', 'error');
+                apiKeyInput.focus();
+                return;
+            }
+
+            workspaceSection.classList.remove('hidden');
+
+            const newBatch = filesArray.map((file, idx) => {
+                const { ext } = splitFileName(file.name);
+                const previewUrl = file.type.startsWith('image/') ? URL.createObjectURL(file) : null;
+                return {
+                    id: `${Date.now()}_${Math.random().toString(36).substring(2, 8)}_${idx}`,
+                    file,
+                    previewUrl,
+                    originalName: file.name,
+                    extension: ext,
+                    newName: '',
+                    status: 'processing',
+                    errorMsg: ''
+                };
+            });
+
+            fileQueue = [...fileQueue, ...newBatch];
+            renderWorkspace();
+            showToast(`${newBatch.length}টি ফাইল লোড হয়েছে, SEO রিনেম শুরু হচ্ছে...`, 'info');
+
+            // একসাথে ২টি করে ফাইল প্রসেস করা যাতে সার্ভার ওভারলোড না হয়
+            const concurrencyLimit = 2;
+            let currentIndex = 0;
+
+            async function worker() {
+                while (currentIndex < newBatch.length) {
+                    const item = newBatch[currentIndex++];
+                    await renameSingleItem(item);
+                }
+            }
+
+            const workers = Array.from({ length: Math.min(concurrencyLimit, newBatch.length) }, () => worker());
+            await Promise.all(workers);
+
+            const anyProcessing = fileQueue.some(f => f.status === 'processing');
+            const doneFiles = fileQueue.filter(f => f.status === 'done');
+            if (!anyProcessing && doneFiles.length > 0 && autoZipToggle.checked) {
+                await triggerZipDownload(true);
+            }
+        }
+
+        async function renameSingleItem(item) {
+            const apiKey = (apiKeyInput.value || localStorage.getItem('gemini_pro_renamer_key') || '').trim();
+            if (!apiKey) {
+                item.status = 'error';
+                item.errorMsg = 'API Key দেওয়া হয়নি';
+                renderWorkspace();
+                return;
+            }
+
+            item.status = 'processing';
+            item.errorMsg = '';
+            renderWorkspace();
+
+            try {
+                const promptText = getPromptInstruction(item.originalName, item.file.type);
+                const parts = [{ text: promptText }];
+
+                if (item.file.type.startsWith('image/')) {
+                    const optimized = await createOptimizedImageBase64(item.file, 512);
+                    if (optimized?.data) {
+                        parts.push({
+                            inlineData: {
+                                mimeType: optimized.mimeType,
+                                data: optimized.data
+                            }
+                        });
+                    }
+                } else if ((item.file.type === 'application/pdf' || item.file.type.startsWith('text/')) && item.file.size <= 4 * 1024 * 1024) {
+                    const base64 = await fileToBase64(item.file);
+                    if (base64) {
+                        parts.push({
+                            inlineData: {
+                                mimeType: item.file.type || 'application/octet-stream',
+                                data: base64
+                            }
+                        });
+                    }
+                }
+
+                const aiResponse = await queryGeminiModels(apiKey, {
+                    contents: [{ parts }],
+                    generationConfig: {
+                        temperature: 0.35
+                    }
+                });
+
+                const { base } = splitFileName(item.originalName);
+                const cleanBase = sanitizeBaseName(aiResponse, base);
+                item.newName = ensureUniqueFileName(cleanBase, item.extension, item.id);
+                item.status = 'done';
+            } catch (err) {
+                item.status = 'error';
+                item.errorMsg = err.message || 'রিনেম ব্যর্থ হয়েছে';
+            }
+
+            renderWorkspace();
+        }
+
+        // ==========================================
+        // ৬. রেন্ডারিং ও ইউজার অ্যাকশন
+        // ==========================================
+        function renderWorkspace() {
+            const total = fileQueue.length;
+            const doneCount = fileQueue.filter(f => f.status === 'done').length;
+            const errorCount = fileQueue.filter(f => f.status === 'error').length;
+            const completedOrFailed = doneCount + errorCount;
+
+            statTotal.textContent = total;
+            statDone.textContent = doneCount;
+            downloadAllZipBtn.disabled = doneCount === 0;
+
+            const percent = total > 0 ? Math.round((completedOrFailed / total) * 100) : 0;
+            loaderPercent.textContent = `${percent}%`;
+            loaderProgressBar.style.width = `${percent}%`;
+
+            if (total === 0) {
+                loaderStatusText.textContent = 'অপেক্ষমান...';
+            } else if (completedOrFailed < total) {
+                loaderSpinner.classList.remove('hidden');
+                loaderStatusText.textContent = `AI SEO নাম তৈরি করছে (${completedOrFailed}/${total} সম্পন্ন)...`;
+            } else {
+                loaderSpinner.classList.add('hidden');
+                loaderStatusText.textContent = `🎉 সব কাজ সম্পন্ন! (${doneCount}/${total}টি ফাইল SEO রিনেম হয়েছে)`;
+            }
+
+            filesContainer.innerHTML = '';
+
+            fileQueue.forEach(item => {
+                const card = document.createElement('div');
+                card.className = 'bg-white p-4 rounded-2xl border border-slate-200/90 shadow-sm flex flex-col sm:flex-row sm:items-center justify-between gap-4 transition hover:border-indigo-200';
+
+                // বাম অংশ: থাম্বনেইল + পুরনো ও নতুন নাম
+                const leftDiv = document.createElement('div');
+                leftDiv.className = 'flex items-start sm:items-center gap-3.5 min-w-0 flex-grow';
+
+                if (item.previewUrl) {
+                    const img = document.createElement('img');
+                    img.src = item.previewUrl;
+                    img.alt = item.originalName;
+                    img.className = 'w-14 h-14 rounded-xl object-cover border border-slate-200 shrink-0 bg-slate-50';
+                    leftDiv.appendChild(img);
+                } else {
+                    const iconBox = document.createElement('div');
+                    iconBox.className = 'w-14 h-14 rounded-xl bg-indigo-50 border border-indigo-100 text-indigo-600 flex items-center justify-center font-bold text-xs uppercase shrink-0';
+                    iconBox.textContent = (item.extension || '.FILE').replace('.', '').substring(0, 5);
+                    leftDiv.appendChild(iconBox);
+                }
+
+                const infoDiv = document.createElement('div');
+                infoDiv.className = 'min-w-0 flex-grow space-y-1.5';
+
+                const origP = document.createElement('p');
+                origP.className = 'text-xs text-slate-400 truncate';
+                origP.textContent = `আগের নাম: ${item.originalName}`;
+                infoDiv.appendChild(origP);
+
+                if (item.status === 'processing') {
+                    const statusP = document.createElement('div');
+                    statusP.className = 'flex items-center gap-2 text-sm font-semibold text-indigo-600';
+                    statusP.innerHTML = `
+                        <svg class="animate-spin h-4 w-4 text-indigo-600 shrink-0" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                            <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                            <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                        </svg>
+                        <span>AI সুন্দর SEO নাম তৈরি করছে...</span>
+                    `;
+                    infoDiv.appendChild(statusP);
+                } else if (item.status === 'error') {
+                    const errP = document.createElement('p');
+                    errP.className = 'text-xs font-semibold text-rose-600 break-words';
+                    errP.textContent = `❌ ${item.errorMsg}`;
+                    infoDiv.appendChild(errP);
+                } else {
+                    const editWrap = document.createElement('div');
+                    editWrap.className = 'flex items-center gap-2';
+
+                    const nameInput = document.createElement('input');
+                    nameInput.type = 'text';
+                    nameInput.value = item.newName;
+                    nameInput.title = 'চাইলে নামটি এডিট করতে পারেন';
+                    nameInput.className = 'w-full px-3 py-1.5 bg-emerald-50/70 border border-emerald-200 rounded-lg text-sm font-bold text-emerald-900 focus:outline-none focus:ring-2 focus:ring-emerald-500/30';
+                    nameInput.addEventListener('change', (e) => {
+                        const val = e.target.value.trim();
+                        if (val) {
+                            item.newName = val;
+                        } else {
+                            e.target.value = item.newName;
+                        }
+                    });
+                    editWrap.appendChild(nameInput);
+                    infoDiv.appendChild(editWrap);
+                }
+
+                leftDiv.appendChild(infoDiv);
+                card.appendChild(leftDiv);
+
+                // ডান অংশ: অ্যাকশন বাটন
+                const rightDiv = document.createElement('div');
+                rightDiv.className = 'flex items-center justify-end gap-2 shrink-0';
+
+                if (item.status === 'done') {
+                    const dlBtn = document.createElement('button');
+                    dlBtn.type = 'button';
+                    dlBtn.className = 'px-3.5 py-2 bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-bold rounded-xl shadow-sm transition cursor-pointer';
+                    dlBtn.textContent = 'ডাউনলোড';
+                    dlBtn.addEventListener('click', () => downloadSingleFile(item));
+                    rightDiv.appendChild(dlBtn);
+                }
+
+                if (item.status === 'done' || item.status === 'error') {
+                    const retryBtn = document.createElement('button');
+                    retryBtn.type = 'button';
+                    retryBtn.className = 'px-3 py-2 bg-indigo-50 hover:bg-indigo-100 text-indigo-700 text-xs font-bold rounded-xl transition cursor-pointer';
+                    retryBtn.textContent = item.status === 'error' ? 'আবার চেষ্টা করুন' : 'পুনরায় নাম';
+                    retryBtn.addEventListener('click', () => renameSingleItem(item));
+                    rightDiv.appendChild(retryBtn);
+                }
+
+                const removeBtn = document.createElement('button');
+                removeBtn.type = 'button';
+                removeBtn.title = 'তালিকা থেকে সরান';
+                removeBtn.className = 'p-2 text-slate-400 hover:text-rose-600 hover:bg-rose-50 rounded-xl transition cursor-pointer';
+                removeBtn.innerHTML = `
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" />
+                    </svg>
+                `;
+                removeBtn.addEventListener('click', () => {
+                    if (item.previewUrl) URL.revokeObjectURL(item.previewUrl);
+                    fileQueue = fileQueue.filter(f => f.id !== item.id);
+                    if (fileQueue.length === 0) {
+                        workspaceSection.classList.add('hidden');
+                    }
+                    renderWorkspace();
+                });
+                rightDiv.appendChild(removeBtn);
+
+                card.appendChild(rightDiv);
+                filesContainer.appendChild(card);
+            });
+        }
+
+        function downloadSingleFile(item) {
+            const url = URL.createObjectURL(item.file);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = item.newName || item.originalName;
+            document.body.appendChild(a);
+            a.click();
+            a.remove();
+            setTimeout(() => URL.revokeObjectURL(url), 1500);
+        }
+
+        // ==========================================
+        // ৭. ZIP ডাউনলোড ও বাল্ক কন্ট্রোল
+        // ==========================================
+        async function triggerZipDownload(isAuto = false) {
+            const doneItems = fileQueue.filter(f => f.status === 'done');
+            if (doneItems.length === 0) return;
+
+            const origHTML = downloadAllZipBtn.innerHTML;
+            downloadAllZipBtn.disabled = true;
+            downloadAllZipBtn.textContent = 'ZIP তৈরি হচ্ছে...';
+
+            try {
+                const zip = new JSZip();
+                doneItems.forEach(item => {
+                    zip.file(item.newName, item.file);
+                });
+
+                const blob = await zip.generateAsync({ type: 'blob' });
+                const url = URL.createObjectURL(blob);
+                const a = document.createElement('a');
+                a.href = url;
+                a.download = `SEO_Renamed_Files_${new Date().toISOString().slice(0, 10)}.zip`;
+                document.body.appendChild(a);
+                a.click();
+                a.remove();
+                setTimeout(() => URL.revokeObjectURL(url), 2000);
+
+                showToast(
+                    isAuto
+                        ? `🎉 সব SEO রিনেম শেষ! ${doneItems.length}টি ফাইলের ZIP অটো-ডাউনলোড হয়েছে।`
+                        : `✅ ${doneItems.length}টি ফাইলের ZIP ডাউনলোড শুরু হয়েছে।`,
+                    'success'
+                );
+            } catch (err) {
+                showToast('ZIP ফাইল তৈরি করতে সমস্যা হয়েছে।', 'error');
+            } finally {
+                downloadAllZipBtn.disabled = false;
+                downloadAllZipBtn.innerHTML = origHTML;
+            }
+        }
+
+        downloadAllZipBtn.addEventListener('click', () => triggerZipDownload(false));
+
+        retryAllBtn.addEventListener('click', async () => {
+            if (fileQueue.length === 0) return;
+            const concurrencyLimit = 2;
+            let idx = 0;
+            async function worker() {
+                while (idx < fileQueue.length) {
+                    const item = fileQueue[idx++];
+                    await renameSingleItem(item);
+                }
+            }
+            await Promise.all(Array.from({ length: Math.min(concurrencyLimit, fileQueue.length) }, () => worker()));
+            if (autoZipToggle.checked) {
+                await triggerZipDownload(true);
+            }
+        });
+
+        clearListBtn.addEventListener('click', () => {
+            fileQueue.forEach(item => {
+                if (item.previewUrl) URL.revokeObjectURL(item.previewUrl);
+            });
+            fileQueue = [];
+            workspaceSection.classList.add('hidden');
+            renderWorkspace();
+            showToast('তালিকা পরিষ্কার করা হয়েছে।', 'info');
+        });
+    </script>
+</body>
+</html>
